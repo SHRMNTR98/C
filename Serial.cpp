@@ -10,7 +10,7 @@ void InitSerialPort(void)
   #ifdef __WIN32__
     char *port = "\\\\.\\COM12";
   #endif
-  #ifdef __linux__
+  #if defined __linux__ || __APPLE__
     char *port = "/dev/ttyUSB0";
   #endif
   my=SerialInit(port,BaudRate);
@@ -70,7 +70,7 @@ HANDLE SerialInit(char *ComPortName, int BaudRate)
   #endif
 
   //On linux you need to open the tty port
-  #ifdef __linux__
+  #if defined __linux__ || __APPLE__
   printf("Opening Com Port on Linux \n");
   hComm = open(ComPortName,  O_RDWR | O_NOCTTY);
   // Create new termios struc, we call it 'tty' for convention
@@ -126,7 +126,7 @@ char SerialGetc(HANDLE *hComm)
       bReadRC = ReadFile(*hComm, &rxchar, 1, &iBytesRead, NULL);
     } while (iBytesRead==0);
   #endif
-  #ifdef __linux__
+  #if defined __linux__ || __APPLE__
     // Allocate memory for read buffer, set size according to your needs
     memset(&rxchar, '\0', sizeof(rxchar));
     // Read bytes. The behaviour of read() (e.g. does it block?,
@@ -153,7 +153,7 @@ void SerialPutc(HANDLE *hComm, char txchar)
   static DWORD iBytesWritten;
   bWriteRC = WriteFile(*hComm, &txchar, 1, &iBytesWritten,NULL);
   #endif
-  #ifdef __linux__
+  #if defined __linux__ || __APPLE__
   // Write to serial port
   write(*hComm,&txchar,sizeof(txchar));
   #endif
